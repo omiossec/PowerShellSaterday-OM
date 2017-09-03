@@ -52,6 +52,7 @@ Configuration CreateVM
                     Force = $True 
                     DestinationPath = $node.path+"\"+$($vm.VMName) 
                 }
+                
                 # copy the VHD
                 File "CopysyspreVHD_$($vm.VMName)" 
                 {
@@ -59,9 +60,9 @@ Configuration CreateVM
                     Ensure = "Present"
                     Force = $True
                     SourcePath = $AllNodes.TemplateVHDX
-                    DestinationPath =  $node.path+"\"+$($vm.VMName)+"\"+$($vm.VMName)+".vhdx"
+                    DestinationPath =  "$($node.path)$($vm.VMName)\$($vm.VMName).vhdx"
                 }
-
+                
                 # create the vm
                 xVMHyperV "NewVm_$($vm.VMName)" 
                 {
@@ -73,16 +74,19 @@ Configuration CreateVM
                     StartupMemory = $vm.VMMemory
                     ProcessorCount = $vm.VMCpu
                 }
-
+                
                 # Create the VHD
+                
                 foreach ($vhd in $vm.VHDs)
                 {
                     xVhd "NewVhd_$($vm.VMName)_$($vhd.Name)"
                     {
+                        
                         Ensure  = 'present'
                         Name  = $vhd.Name
-                        Path   = $node.path+"\"+$($vm.VMName)+"\"+$vhd.Name
-                        Generation   = vhdx
+                        Path   = "$($node.path)$($vm.VMName)"
+                        Generation   = 'vhdx'
+                        type = 'Dynamic'
                         MaximumSizeBytes = $vhd.Size
 
                     }
@@ -93,7 +97,7 @@ Configuration CreateVM
                             # attach the drive to the VM 
                             
                             
-                            ADD-VMHardDiskDrive -VMName $using:vm.VMName -Path $using:node.path+"\"+$using:vm.VMName+"\"+$using:vhd.Name
+                            ADD-VMHardDiskDrive -VMName $using:vm.VMName -Path "$($using:node.path)$($using:vm.VMName)\$($using:vhd.Name)"
 
 
                             }
@@ -101,7 +105,7 @@ Configuration CreateVM
                             GetScript = {
 
                                 $vm = get-vm -VMName $using:vm.VMName  
-                                $vhd = get-vhd  -VMId $vm.vmid | where-object path -eq $using:node.path+"\"+$using:vm.VMName+"\"+$using:vhd.Name
+                                $vhd = get-vhd  -VMId $vm.vmid | where-object path -eq "$($using:node.path)$($using:vm.VMName)\$($using:vhd.Name)"
 
                                 return @{ result = $vhd }      
                             }
@@ -110,9 +114,9 @@ Configuration CreateVM
                                 try 
                                 {
                                     $vm = get-vm -VMName $using:vm.VMName  
-                                    $vhd = get-vhd  -VMId $vm.vmid | where-object path -eq $using:node.path+"\"+$using:vm.VMName+"\"+$using:vhd.Name
-
-                                    if ($a.value -gt 0)
+                                    $vhd = get-vhd  -VMId $vm.vmid | where-object path -eq "$($using:node.path)$($using:vm.VMName)\$($using:vhd.Name)"
+                                    
+                                    if ($vhd.value -gt 0)
                                     {
                                         return $true
                                     }
@@ -131,14 +135,14 @@ Configuration CreateVM
                     }
 
                 }
-
+               
 
                 script "ConnectVm_$($vm.VMName)"
                 {
 
                     SetScript = {
 
-                        Add-VMNetworkAdapter -VM $using:vm.VMName  -SwitchName $using:vm.SwitchName    
+                        Add-VMNetworkAdapter -VMName $using:vm.VMName  -SwitchName $using:vm.SwitchName    
 
 
                     }
@@ -190,8 +194,13 @@ function Reset-MofConfig
 # compilation des données en mof 
 function Initialize-MofConfig
 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [hashtable] $data
+    )  
 
-    createvm -ConfigurationData $VMData -verbose
+    createvm -ConfigurationData $data -verbose
 }
 
 <#
@@ -212,8 +221,12 @@ try
             write-error '$VMdataFile non trouvé'
             exit
         }
+
+        write-verbose "Lecture : $vmdatafile"
         # Récupération des données dans une variable
-        $VMData = [hashtable] (Invoke-Expression (get-content $VMdataFile | out-string))
+        $VMData = [hashtable] (iex (gc $vmdatafile | out-string))
+
+        
 
         write-verbose "Etape 1: Suppression des anciennes donnée"
         # Suppression des anciennes données
@@ -221,7 +234,7 @@ try
 
         write-verbose "Etape 2: Compilation des fichiers MOF"
         # Compilation de la configuration 
-        Initialize-MofConfig
+        Initialize-MofConfig -data $VMData
 
         write-verbose "Etape 3: Lancement de la configuration"
         Start-DscConfiguration -Path .\createvm -Wait -Force -Verbose -Erroraction Stop

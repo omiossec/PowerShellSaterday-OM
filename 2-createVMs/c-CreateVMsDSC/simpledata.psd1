@@ -1,4 +1,4 @@
-$VmConfig = @{
+@{
 
     AllNodes = 
     @(
@@ -9,7 +9,7 @@ $VmConfig = @{
         },
         @{ 
             
-            NodeName="Hypervhost01"                                   
+            NodeName="lab-node01"                                   
             Role="HyperV"
             path="m:\vm\" 
             VMs=@(
