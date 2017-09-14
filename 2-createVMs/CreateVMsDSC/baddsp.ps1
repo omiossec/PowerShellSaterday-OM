@@ -1,3 +1,4 @@
+# Impossible à faire fonctionner
 configuration badDsc
 {
     param (
