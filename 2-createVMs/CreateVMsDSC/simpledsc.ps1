@@ -18,9 +18,7 @@
     .\simpledsc.ps1 -VMdata sampledata.psd1
     
 .NOTES
-    the cloudbleed domain list in provided. If you want the latest one simply delete the file sorted_unique_cf.txt file
-    this script will download it again from pirate github 
-    
+   
     Author       : Olivier Miossec <olivier@omiossec.work>
 #> 
 
@@ -224,7 +222,7 @@ try
 
         write-verbose "Lecture : $vmdatafile"
         # Récupération des données dans une variable
-        $VMData = [hashtable] (iex (gc $vmdatafile | out-string))
+        $VMData = [hashtable] (invoke-expression (get-content $vmdatafile | out-string))
 
         
 

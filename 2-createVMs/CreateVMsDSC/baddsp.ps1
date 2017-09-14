@@ -1,16 +1,9 @@
-configuration BadDsc
+configuration badDsc
 {
-
-
-
     param (
-
            [string]$NodeName = 'localhost'
-
      )
-
- node $NodeName {
-        
+ node $NodeName {       
     File Folder1
         {
            DestinationPath = 'c:\Folder1'

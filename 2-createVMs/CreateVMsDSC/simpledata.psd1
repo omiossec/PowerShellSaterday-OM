@@ -1,14 +1,11 @@
 @{
-
     AllNodes = 
     @(
-
         @{ 
             NodeName="*"  
             TemplateVHDX="m:\template\win2016.vhdx"                                         
         },
         @{ 
-            
             NodeName="lab-node01"                                   
             Role="HyperV"
             path="m:\vm\" 
