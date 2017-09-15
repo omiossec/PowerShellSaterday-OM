@@ -18,6 +18,11 @@ if (!(test-path -Path "$pathmodule\RoleCapabilities"))
     new-item -Path "$pathmodule\RoleCapabilities" -ItemType Directory
 }
 
+if (!(test-path -Path $$pathJea))
+{
+    new-item -Path $pathJea -ItemType Directory
+}
+
 # pour le module manifeste
 New-ModuleManifest -Path "$pathmodule\HyperOpsJea.psd1"
 
