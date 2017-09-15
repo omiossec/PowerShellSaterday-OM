@@ -33,5 +33,12 @@ New-PSRoleCapabilityFile -Path "$pathmodule\RoleCapabilities\HyperOpsJea.psrc" -
 # creation du fichier de session 
 
 New-PSSessionConfigurationFile -Path "$pathJea\HyperOpsJea.pssc" -Author Om-PowerShellSaturdayParis2017
+
+
+
+# a exectuter sur la machine  ou en dsc
+Register-PSSessionConfiguration -name HyperOpsJea -Path $pathJea\HyperOpsJea.pssc
+
+restart-service winrm
  
 
