@@ -29,38 +29,64 @@ param(
 )  
 
 
-process {
+ 
+# Récupération des données dans une variable
+$VMData = [hashtable] (invoke-expression (get-content $vmdatafile | out-string))
 
-   
-    # Récupération des données dans une variable
-    $VMData = [hashtable] (invoke-expression (get-content $vmdatafile | out-string))
+# on construit un array avec les données que l'on souhaite tester
+$testcase =@()
 
-
-
-    function get-vmFromDataFile
+    foreach ($node in $vmdata.allnodes)
     {
-
-
-        
+    
+                if ($node.nodename -ne "*")
+                {
+                    
+                    foreach ($vm in $node.vms)
+                    {
+                        
+                        
+                        $hashdata = @{
+                              vmname=$vm.VMName
+                              memory=$vm.VMMemory
+                              vcpu=$vm.VMCpu
+                              host = $node.NodeName
+                          }
+                          $testcase += $hashdata
+                          
+                          
+                    }
+    
+        }
     }
+        
+
+       
 
 
-    describe 'DeployVm' {
-        
-        
+
+Describe 'Simple Vm Validation' {
+     
+        It "the VM <VmName>   Should Be Running" -TestCases $testcase {
+            param($vmname)
+            (get-vm -Name $vmname -ComputerName lab-node02).State | Should Be 'Running'
             
-
-
-
-
-
-
-        
-        
-        
         }
 
 
+        It "the VM <VmName> should have <vcpu> cpu" -TestCases $testcase {
+        param($vmname,$vcpu)
+        (get-vm -Name $vmname -ComputerName lab-node02).ProcessorCount | Should Be $vcpu
 
+        }
+
+        It "the VM <VmName> should have <memory> Ram" -TestCases $testcase {
+        param($vmname,$memory)
+        (get-vm -Name $vmname -ComputerName lab-node02).MemoryAssigned  | Should Be $memory
+        
+    }
 }
+
+
+
 
