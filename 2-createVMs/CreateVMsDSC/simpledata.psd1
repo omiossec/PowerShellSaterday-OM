@@ -6,7 +6,7 @@
             TemplateVHDX="m:\template\win2016.vhdx"                                         
         },
         @{ 
-            NodeName="lab-node01"                                   
+            NodeName="lab-xxxxx"                                   
             Role="HyperV"
             path="m:\vm\" 
             VMs=@(

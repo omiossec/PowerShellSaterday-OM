@@ -9,7 +9,7 @@
             },
             @{ 
                 
-                NodeName="lab-xxxxxx"                                   
+                NodeName="lab-xxxx"                                   
                 Role="HyperV"
                 path="m:\vm\" 
                 VMs=@(

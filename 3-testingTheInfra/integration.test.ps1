@@ -15,21 +15,16 @@
     Le chemin du fichier psd1 contenant les donnees
 
 .EXAMPLE
-    .\integration.test.ps1 -VMdata sampledata.psd1
+    .\integration.test.ps1 
     
 .NOTES
    
     Author       : Olivier Miossec <olivier@omiossec.work>
 #>
 
-[CmdletBinding()]
-param(
-    [Parameter(Mandatory=$true)]
-    [String] $VMdataFile
-)  
 
 
- 
+$vmdatafile = "testdata.psd1"
 # Récupération des données dans une variable
 $VMData = [hashtable] (invoke-expression (get-content $vmdatafile | out-string))
 
