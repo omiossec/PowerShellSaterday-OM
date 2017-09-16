@@ -33,7 +33,7 @@ $testcase =@()
 
     foreach ($node in $vmdata.allnodes)
     {
-    
+
                 if ($node.nodename -ne "*")
                 {
                     
@@ -64,20 +64,20 @@ Describe 'Simple Vm Validation' {
      
         It "the VM <VmName>   Should Be Running" -TestCases $testcase {
             param($vmname)
-            (get-vm -Name $vmname -ComputerName lab-node02).State | Should Be 'Running'
+            (get-vm -Name $vmname -ComputerName lab-xxxx).State | Should Be 'Running'
             
         }
 
 
         It "the VM <VmName> should have <vcpu> cpu" -TestCases $testcase {
         param($vmname,$vcpu)
-        (get-vm -Name $vmname -ComputerName lab-node02).ProcessorCount | Should Be $vcpu
+        (get-vm -Name $vmname -ComputerName lab-xxxx).ProcessorCount | Should Be $vcpu
 
         }
 
         It "the VM <VmName> should have <memory> Ram" -TestCases $testcase {
         param($vmname,$memory)
-        (get-vm -Name $vmname -ComputerName lab-node02).MemoryAssigned  | Should Be $memory
+        (get-vm -Name $vmname -ComputerName lab-xxx).MemoryAssigned  | Should Be $memory
         
     }
 }
