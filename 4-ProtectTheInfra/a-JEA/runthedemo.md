@@ -4,9 +4,9 @@ runas /user:sdnlab\homerjs powershell
 whoami
 
 
-get-vm -computername lab-node02
+get-vm -computername xxxx
 
 
-enter-pssession -ComputerName lab-node02
+enter-pssession -ComputerName xxxxx
 
- enter-pssession -ComputerName lab-node02 -ConfigurationName HyperOpsJea
+ enter-pssession -ComputerName xxxx -ConfigurationName HyperOpsJea
